@@ -1,0 +1,43 @@
+@import '../../vendor/filament/filament/resources/css/app.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.image {
+  text-align: center;
+}
+
+.image .selfie-image {
+  border-radius: 10px;
+}
+
+.image .image-menu {
+  opacity: 0;
+  background-color: #775c9194;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 40px;
+  border-radius: 10px;
+  
+}
+
+.image:hover .image-menu {
+  opacity: 1;
+  transition: all 0.2s;
+}
+
+.image:hover .image-menu:first-child {
+  margin-right: 30px;
+}
+
+.item-option {
+  background: black;
+  display: inline-block;
+  border-radius: 10px;
+  padding: 5px;
+  height: 70px;
+  width: 70px;
+}
+

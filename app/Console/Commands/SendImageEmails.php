@@ -42,6 +42,7 @@ class SendImageEmails extends Command
         $counter = 1;
         $all = count($images);
         foreach ($images as $image) {
+            $files = [];
             $decodedMails = json_decode($image->emails);
             if (count($decodedMails) > 0) {
                 $imagePath = \Storage::disk('public')->path($image->manipulated_path);

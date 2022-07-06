@@ -20,3 +20,4 @@ Route::get('/', function () {
 Route::post('api/image-upload', [App\Http\Controllers\UploadController::class, 'store']);
 Route::post('api/send-mail', [App\Http\Controllers\UploadController::class, 'sendMail']);
 Route::get('api/manipulate', [App\Http\Controllers\UploadController::class, 'manipulateImages']);
+Route::get('download-image/{id}', [App\Http\Controllers\AdminController::class, 'downloadFile'])->name('downloadfile');

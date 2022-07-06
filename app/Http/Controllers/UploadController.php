@@ -21,10 +21,10 @@ class UploadController extends Controller
         }
 
     
-        return $this->uploadImages($request->file('fileName'), $request->get('emails'));
+        return $this->uploadImages($request->file('fileName'), $request->get('emails'), $request->get('event_id'));
     }
 
-    public function uploadImages($images = [], $emails = [])
+    public function uploadImages($images = [], $emails = [], $eventId = null)
     {
         $allowedfileExtension=['pdf','jpg','png', 'jpeg', 'JPEG', 'PNG', 'JPG', 'HEIC'];
         $files = $images;
@@ -57,14 +57,16 @@ class UploadController extends Controller
                     $name = $mediaFiles->getClientOriginalName();
                     $uploadedFiles[] = [
                         'file_path' => 'rendezvenyek/'.date('Y_m_d'). '/'.$folderName . '/' .$name,
-                        'emails' => $emails[$key]
+                        'emails' => $emails[$key],
+                        'event_id' => $eventId
                     ];
                 }
 
                 foreach ($uploadedFiles as $uploadedItem) {
                     $newImage = ImageModel::create([
                         'image_path' => $uploadedItem['file_path'],
-                        'emails' => $uploadedItem['emails']
+                        'emails' => $uploadedItem['emails'],
+                        'event_id' => $uploadedItem['event_id'],
                     ]);
                 }
 
