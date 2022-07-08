@@ -45,6 +45,11 @@ class ProjectResource extends Resource
                     ->maxLength(200),
                 Forms\Components\DateTimePicker::make('project_date')
                     ->required(),
+                Forms\Components\FileUpload::make('frame_image')
+                    ->disk('public')
+                    ->directory('frames')
+                    ->enableDownload()
+                    ->image(),
             ]);
     }
 

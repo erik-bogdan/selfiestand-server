@@ -8,14 +8,15 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
     
     <link rel="stylesheet" href="{{ mix('css/app.css') }}">
-    <script src="{{ mix('js/app.js') }}" defer></script>
     
     @livewireStyles
+    <script src="{{ mix('js/app.js') }}" defer></script>
     @stack('styles')
 </head>
 
 <body class="w-screen min-h-screen font-sans antialiased {{ $bodyClass ?? ''}}">
     <livewire:toasts />
+
     {{ $slot }}
     
     @stack('scripts')

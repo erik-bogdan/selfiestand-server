@@ -18,6 +18,7 @@ class Image extends Model
         'image_path',
         'emails',
         'manipulated_path',
+        'thumbnail_path',
         'email_sent'
     ];
 
@@ -30,4 +31,9 @@ class Image extends Model
         'id' => 'integer',
         'emails' => 'json',
     ];
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
 }

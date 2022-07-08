@@ -41,3 +41,16 @@
   width: 70px;
 }
 
+
+.no-sign {
+  left: 10px;
+  top: 10px;
+  background: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  line-height: 1.8;
+  font-size: 16px;
+  font-weight: 700;
+  opacity: 0.8;
+}

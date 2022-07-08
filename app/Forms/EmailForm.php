@@ -7,59 +7,56 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Placeholder;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
+use Illuminate\Support\Collection;
+use Filament\Forms\Components\TagsInput;
 
 class EmailForm extends Form
 {
-    public int $imageId;
-  
+    public $imageId = '';
+    public array $prefilledValues = [];
+
     public function getFormSchema(Component $livewire): array
     {
         return [
-          TextInput::make('email')
-            ->label('Enter your email')
-            ->placeholder('john@example.com')
+          TagsInput::make('email')
+            ->label('Írd be az email-címet')
+            ->placeholder('john@example.com, john2@example.com')
+            ->helperText('Vesszővel elválasztva tudsz többet is felsorolni!')
             ->required(),
-        Placeholder::make('open_child_modal')
-            ->disableLabel()
-            ->content(
-                new HtmlString('Click <button onclick="Livewire.emit(\'modal:open\', \'create-user-child\')" type="button" class="text-primary-500">here</button> to open a child modal🤩')
-            ),
+     
         ];
     }
  
     public function submit(Collection $state): void
     {
         //User::create($state->all());
-     
+        $values = $state->all();
+        $image = \App\Models\Image::where('id', $this->imageId)->first();
+
+        \App\Http\Helpers\EmailHelper::sendImage($image, $state['email']);
         toast()
             ->success('Thanks for submitting the form! (Your data isn\'t stored anywhere.')
             ->push();
     }
  
-    public function mount(array $params): void
+
+
+    public function onOpen(array $eventParams, self $formClass): void
     {
-        $this->imageId = $params['imageId'];
+        $formClass->imageId = $eventParams[0];
     }
 
     public function getErrorMessages(): array
     {
         return [
-            'email.required' => 'Please fill in your e-email',
+            'email.required' => 'Adj meg legalább 1 email címet',
         ];
     }
 
     public function fill(): array
     {
-        $image = \App\Models\Image::where('id', $this->imageId)->first();
-      
         return [
-          'email' => $image->manipulated_path,
-       ];
-    }
- 
-    /** Only applicable for Modals and SlideOvers */
-    public function onOpen(): void
-    {
-        //
+            'imageId' => $this->imageId,
+         ];
     }
 }

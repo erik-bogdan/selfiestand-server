@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "03d1f6c91cb5f72405e9472423af0d94",
+    "content-hash": "7a276feab1eab11d23fdb38a2c1f5a95",
     "packages": [
         {
             "name": "akaunting/laravel-money",
@@ -4694,6 +4694,64 @@
                 }
             ],
             "time": "2022-03-27T21:42:02+00:00"
+        },
+        {
+            "name": "rolandstarke/laravel-thumbnail",
+            "version": "v1.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rolandstarke/laravel-thumbnail.git",
+                "reference": "a7b513e335ae3977b10f4d3e41ffee45655d36cd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rolandstarke/laravel-thumbnail/zipball/a7b513e335ae3977b10f4d3e41ffee45655d36cd",
+                "reference": "a7b513e335ae3977b10f4d3e41ffee45655d36cd",
+                "shasum": ""
+            },
+            "require": {
+                "intervention/image": "^2.0",
+                "php": ">=7.1.3"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Rolandstarke\\Thumbnail\\ThumbnailServiceProvider"
+                    ],
+                    "aliases": {
+                        "Thumbnail": "Rolandstarke\\Thumbnail\\Facades\\Thumbnail"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Rolandstarke\\Thumbnail\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Roland Starke"
+                }
+            ],
+            "description": "Laravel Thumbnail generator",
+            "keywords": [
+                "image",
+                "laravel",
+                "thumbnail"
+            ],
+            "support": {
+                "issues": "https://github.com/rolandstarke/laravel-thumbnail/issues",
+                "source": "https://github.com/rolandstarke/laravel-thumbnail/tree/v1.0.5"
+            },
+            "time": "2022-03-15T07:29:57+00:00"
         },
         {
             "name": "ryangjchandler/blade-tabler-icons",

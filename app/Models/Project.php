@@ -18,6 +18,7 @@ class Project extends Model
         'project_title',
         'uuid',
         'project_date',
+        'frame_image'
     ];
 
     /**
