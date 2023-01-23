@@ -11,17 +11,74 @@ use FFMpeg;
 use FFMpeg\Format\Video\X264;
 use Spatie\Image\Image as ImageSpatie;
 use Intervention\Image\Facades\Image;
+use App\Models\Project;
+use App\Models\FailedEmail;
 
 class UploadController extends Controller
 {
     public function store(Request $request)
     {
-        if (!$request->hasFile('fileName')) {
+        $projectUuid = $request->get('project_uuid');
+        $fileUuid = $request->get('file_uuid');
+        $image = $request->file('file');
+
+        if (!$request->hasFile('file')) {
             return response()->json(['upload_file_not_found'], 400);
         }
+        
+        if (!$projectUuid) {
+            return response()->json(['uuid_not_found'], 400);
+        }
+       
+        if (!$fileUuid) {
+            return response()->json(['file_uuid_not_found'], 400);
+        }
 
-    
-        return $this->uploadImages($request->file('fileName'), $request->get('emails'), $request->get('event_id'));
+        $project = Project::where('uuid', $projectUuid)->first();
+        if (!$project) {
+            return response()->json(['project_not_found'], 403);
+        }
+
+       $fileIsExists = ImageModel::where([
+        ['project_id', $project->id],
+        ['uuid', $fileUuid]
+       ])->first();
+
+       if ($fileIsExists) {
+        return response()->json(['file_already_exists'], 403);
+       }
+
+
+        if (!\File::isDirectory('rendezvenyek/'. $projectUuid)) {
+            \File::makeDirectory('rendezvenyek/'. $projectUuid, 0777, true, true);
+        }
+
+        if (!\File::isDirectory(public_path('storage/rendezvenyek/' . $projectUuid . '/thumbnail'))) {
+            \File::makeDirectory(public_path('storage/rendezvenyek/' . $projectUuid . '/thumbnail'), 0777, true, true);
+        }
+
+        $path = $image->storeAs('public/rendezvenyek/' . $projectUuid, $image->getClientOriginalName());
+
+        $newImage = ImageModel::create([
+            'image_path' => str_replace("public/", "", $path),
+            'emails' => [],
+            'project_id' => $project->id,
+            'uuid' => $fileUuid
+        ]);
+
+        $img = \Storage::disk('public')->get($newImage->image_path);
+
+        $manipulatedPublicPathThumbnail = public_path('storage/rendezvenyek/' . $projectUuid . '/thumbnail/' . $image->getClientOriginalName());
+
+        $imgNew = Image::make($img)->resize(384, null, function ($constraint) {
+            $constraint->aspectRatio();
+        })
+        ->save($manipulatedPublicPathThumbnail)
+        ;
+        $newImage->thumbnail_path = 'rendezvenyek/' . $projectUuid . '/thumbnail/' . $imgNew->basename;
+        $newImage->save();
+  
+        //return $this->uploadImages($request->file('fileName'), $request->get('emails'), $request->get('event_id'));
     }
 
     public function uploadImages($images = [], $emails = [], $eventId = null)
@@ -29,6 +86,7 @@ class UploadController extends Controller
         $allowedfileExtension=['pdf','jpg','png', 'jpeg', 'JPEG', 'PNG', 'JPG', 'HEIC'];
         $files = $images;
         $errors = [];
+        dump($files);
 
         foreach ($files as $file) {
             $extension = $file->getClientOriginalExtension();
@@ -83,34 +141,56 @@ class UploadController extends Controller
 
     public function sendMail(Request $request)
     {
+        $photopUuid = $request->get('uuid');
+
+        if (!$photopUuid) {
+            return response()->json(['photo_uuid_not_found'], 403);
+        }
+       
+        $imageRecord = ImageModel::where('uuid', $photopUuid)->first();
+
+
+        if (!$imageRecord) {
+            $newFailedEmail = FailedEmail::create([
+                'uuid' => $photopUuid,
+                'email' => $request->get('email'),
+                'is_success' => false,
+                'attempts' => 1,
+                'first_attempt' => new \DateTime(),
+                'last_attempt' => new \DateTime(),
+            ]);
+
+            return response()->json(['image_record_not_found'], 404);
+        }
+
+        $imageUrl = \Storage::disk('public')->get($imageRecord->image_path);
+        $imagePath = \Storage::disk('public')->path($imageRecord->image_path);
+
+        $image = Image::make($imagePath);
+
         $data["email"] = $request->get('email');
-        $data["title"] = "Fényképek";
-        $data["body"] = "This is Demo";
+        $data["title"] = "SelfieStand fényképed";
 
         $files = [];
 
-        if ($request->hasFile('fileName')) {
-            foreach ($request->file('fileName') as $file) {
-                $files[] = [
-                    'pathToFile' => $file->getRealPath(),
-                    'as' => $file->getClientOriginalName(),
-                    'mime' => $file->getClientMimeType(),
-              ];
-            }
-        }
 
-
-        Mail::send('emails.imageMail', $data, function ($message) use ($data, $files) {
+      /*  Mail::send('emails.imageMail', $data, function ($message) use ($data, $image, $imageUrl) {
             $message->to($data["email"], $data["email"])
-                  ->subject($data["title"]);
+                  ->subject($data["title"])
+                  ->with([
+                    'imageUrl' => $imageUrl
+                  ]);
 
-            foreach ($files as $file) {
-                $message->attach($file['pathToFile'], [
-                  'as' => $file['as'],
-                  'mime' => $file['mime']
-              ]);
-            }
-        });
+                  
+        });*/
+        $emails = $imageRecord->emails;
+        //var_dump(array_push($emails, $request->get('email'));die;
+        $imageRecord->emails = array_push($emails, $request->get('email')); //TODO: Valamiért 1et rak be ide    
+        $imageRecord->email_sent = 1;
+        $imageRecord->save();
+        Mail::to($data["email"])
+        ->send(new \App\Mail\ImageMail($imageUrl, $image->basename));
+
     }
 
     public function convertToVideo($image)
@@ -119,7 +199,7 @@ class UploadController extends Controller
         ->export()
         ->asTimelapseWithFramerate(1)
         //->addFilter('-r', 30)
-        ->inFormat(new X264)
+        ->inFormat(new X264())
         ->save('public/rendezvenyek/timelapse.mp4');
     }
 }

@@ -25,6 +25,7 @@
         "ralphjsmit/tall-install": "^1.4",
         "ralphjsmit/tall-interactive": "^0.8.8",
         "rolandstarke/laravel-thumbnail": "^1.0",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/image": "^2.2",
         "usernotnull/tall-toasts": "^1.5"
     },
@@ -51,7 +52,8 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan vendor:publish --force --tag=livewire:assets --ansi"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",

@@ -14,6 +14,11 @@
 @foreach ($record->images as $key => $image)
     <div class="relative image">
       <div class="absolute no-sign">{{$key + 1}}</div>
+      @if (str_contains($image->thumbnail_path, 'gif'))
+      <div class="absolute no-sign" style="right: 10px; left: initial">
+          GIF
+      </div>
+        @endif
       <div class="image-menu absolute top-0 left-0 w-full h-full">
         <div class="item-option mr-3">
           <a style="cursor:pointer" onclick="Livewire.emit('modal:open', 'send-email', {{$image->id}})"><img src="{{asset('storage/images/icons/new-message.svg')}}" /></a>

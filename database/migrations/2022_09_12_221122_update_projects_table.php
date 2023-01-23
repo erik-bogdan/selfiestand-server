@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class () extends Migration {
     /**
      * Run the migrations.
      *
@@ -12,8 +12,8 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::table('images', function (Blueprint $table) {
-            $table->text('thumbnail_path')->nullable();
+        Schema::table('projects', function (Blueprint $table) {
+            $table->boolean('is_live_event')->default(false);
         });
     }
 
@@ -24,8 +24,8 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::table('images', function (Blueprint $table) {
-            $table->dropColumn('thumbnail_path');
+        Schema::table('projects', function (Blueprint $table) {
+            $table->dropColumn('is_live_event');
         });
     }
 };

@@ -211,7 +211,7 @@ u + #body a {color:inherit;text-decoration:none;font-size:inherit;font-family:in
         <tr>
           <td align="center">
             <!-- Content -->
-                <img src="{{ $message->embed($img_url) }}" style="width: 350px;">
+                <img src="{{ $message->embedData($imageUrl, $imageName) }}" style="width: 350px;">
             <!-- Content -->
           </td>
         </tr>

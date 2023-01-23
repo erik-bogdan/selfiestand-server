@@ -24,7 +24,7 @@
     </head>
     <body class="antialiased bg-grey">
     <div class=" mx-auto sm:container">
-        <livewire:show-live-event />
+        <livewire:last-image />
     </div>
     @livewireScripts
 

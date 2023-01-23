@@ -19,7 +19,9 @@ class Image extends Model
         'emails',
         'manipulated_path',
         'thumbnail_path',
-        'email_sent'
+        'email_sent',
+        'uuid',
+        'project_id'
     ];
 
     /**

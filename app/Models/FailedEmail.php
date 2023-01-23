@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Project extends Model
+class FailedEmail extends Model
 {
     use HasFactory;
 
@@ -15,11 +15,12 @@ class Project extends Model
      * @var array
      */
     protected $fillable = [
-        'project_title',
         'uuid',
-        'project_date',
-        'frame_image',
-        'is_live_event'
+        'email',
+        'is_success',
+        'attempts',
+        'first_attempt',
+        'last_attempt',
     ];
 
     /**
@@ -29,12 +30,9 @@ class Project extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'project_date' => 'datetime',
-        'is_live_event' => 'boolean'
+        'is_success' => 'boolean',
+        'first_attempt' => 'datetime',
+        'last_attempt' => 'datetime',
     ];
 
-    public function images()
-    {
-        return $this->hasMany(Image::class);
-    }
 }

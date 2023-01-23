@@ -13,6 +13,7 @@ use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\BooleanColumn;
 
 class ProjectResource extends Resource
 {
@@ -20,7 +21,7 @@ class ProjectResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
-        
+
     public static function getNavigationLabel(): string
     {
         return __('project.menuTitle');
@@ -35,7 +36,7 @@ class ProjectResource extends Resource
     {
         return __('project.pluralTitle');
     }
-    
+
     public static function form(Form $form): Form
     {
         return $form
@@ -45,11 +46,7 @@ class ProjectResource extends Resource
                     ->maxLength(200),
                 Forms\Components\DateTimePicker::make('project_date')
                     ->required(),
-                Forms\Components\FileUpload::make('frame_image')
-                    ->disk('public')
-                    ->directory('frames')
-                    ->enableDownload()
-                    ->image(),
+
             ]);
     }
 
@@ -61,12 +58,26 @@ class ProjectResource extends Resource
                 Tables\Columns\TextColumn::make('uuid')->label(__('project.input.uuid')),
                 Tables\Columns\TextColumn::make('project_date')->label(__('project.input.project_date'))
                     ->dateTime('Y-m-d H:i'),
+                BooleanColumn::make('is_live_event')->label(__('Élő esemény?'))
+                    ->trueColor('success')
+                    ->falseColor('danger')
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->label(__('Szerkesztés')),
+                Action::make(__('Aktiválás/Inaktiválás'))
+                ->action(function ($record) {
+                    if ($record->is_live_event) {
+                        $record->is_live_event = false;
+                        $record->save();
+                    } else {
+                        \App\Models\Project::where(['is_live_event' => true])->update(['is_live_event' => false]);
+                        $record->is_live_event = true;
+                        $record->save();
+                    }
+                }),
                 Action::make(__('project.gallery.title'))
                     ->url(fn (Project $record): string => route('filament.resources.projects.gallery', $record))
             ])
@@ -74,20 +85,21 @@ class ProjectResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListProjects::route('/'),
             'create' => Pages\CreateProject::route('/create'),
             'edit' => Pages\EditProject::route('/{record}/edit'),
+            'view' => Pages\ViewProject::route('/{record}'),
             'gallery' => Pages\GalleryProject::route('/{record}/gallery'),
         ];
     }

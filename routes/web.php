@@ -17,6 +17,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/last-image', function () {
+    return view('last-image');
+});
+
 Route::post('api/image-upload', [App\Http\Controllers\UploadController::class, 'store']);
 Route::post('api/send-mail', [App\Http\Controllers\UploadController::class, 'sendMail']);
 Route::get('api/manipulate', [App\Http\Controllers\UploadController::class, 'manipulateImages']);
